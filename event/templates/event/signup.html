@@ -1,0 +1,85 @@
+{% extends "event/master.html" %}
+
+{% block title %}{{event.name}} signup{% endblock %}
+
+{% block subpage %}
+<div class='col' id='event_desc'>
+{% autoescape off %}{{event.description}}{% endautoescape %}
+</div>
+<div class='col' id='event_signup'>
+  <div id='signup'>
+    <h3>Signup: {{event.name}}</h3>
+    {% if form.non_field_errors %}
+    <div class='errors'>{{form.non_field_errors}}</div>
+    {% endif %}
+    <form method='post'>
+      {% csrf_token %}
+      <input type='hidden' name='event' value='{{event.pk}}'>
+      <input type='hidden' name='action' value='signup'>
+      <ul class='event_list'>
+	{% for field,x in form.dates %}
+	<li>
+	  <div>{{field.errors}} {{field}} <label>{{x.date|date:"l, M j, Y"}} - {{ x.time }}</label></div>
+	  <div  class='signups'>
+	    <div>
+	      {{x.attending.count}} Attending:
+	      <ul class='attending'>
+		{% for y in x.attending %}
+		<li>{{y.name}}<a href='?event={{event.pk}}&del={{y.hash}}' title='Remove' onclick='return confirm("Are you sure you want to delete {{y.name}} from this list?")'><img class='remove' src='/static/event/imgs/remove.png'></a></li>
+		{% endfor %}
+	      </ul>
+	    </div>
+	    <div>
+	      {{x.not_attending.count}} Not Attending:
+	      <ul class='attending'>
+		{% for y in x.not_attending %}
+		<li>{{y.name}}<a href='?event={{event.pk}}&del={{y.hash}}' title='Remove' onclick='return confirm("Are you sure you want to delete {{y.name}} from this list?")'><img class='remove' src='/static/event/imgs/remove.png'></a></li>
+		{% endfor %}
+	      </ul>
+	    </div>
+	  </div>
+	</li>
+	{% endfor %}
+      </ul>
+      {{form.name.errors}}
+      {{form.name}}
+      {{form.status.errors}}
+      {{form.status}}
+      <button type='submit'>Submit</button>
+    </form>
+  </div>
+  <div id='comment_container'>
+    <h3>Comments</h3>
+    
+    <form id='comment_form' method="post">
+      {% csrf_token %}
+      <input type='hidden' name='action' value='comment'>
+      <input type='hidden' name='event' value='{{event.pk}}'>
+      <p>
+	{{ comment_form.comment.errors }}
+	{{ comment_form.comment }}
+      </p>
+      <p>
+	{{ comment_form.name.errors }}
+	{{ comment_form.name }}
+	<button type='submit'>Leave Comment</button>
+      </p>
+    </form>
+    
+    <ul id='comment_list'>
+      {% for comment in comments %}
+      <li class='comment'>
+	<div class='comment_header'>
+	  {{ comment.name }} - {{ comment.timestamp }}
+	</div>
+	<div class='comment_comment'>{{comment.comment}}</div>
+      </li>
+      {% empty %}
+      <li>No Comments</li>
+      {% endfor %}
+    </ul>
+    
+  </div>
+</div>
+
+{% endblock %}
