@@ -1,8 +1,13 @@
 {% extends "event/master.html" %}
 
-{% block title %}{{event.name}} signup{% endblock %}
+{% block title %}{{event.name}} Signup{% endblock %}
 
 {% block subpage %}
+<script>
+setTimeout(function(){
+   window.location.reload(1);
+}, 60000);
+</script>
 <div class='col' id='event_desc'>
 {% autoescape off %}{{event.description}}{% endautoescape %}
 </div>

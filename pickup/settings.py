@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+import socket
+HOSTNAME = socket.gethostname()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
@@ -20,12 +22,22 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = 'iupfjqt%nx=ro!9u&y(00*ozp4l1z9v+v=s5yxm8*bv_y(z)kb'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# SECURITY WARNING: don't run with debug turned on in production!
+ON_PRODUCTION_SERVER = HOSTNAME in [ "www.brooksee.com", ]
 
-TEMPLATE_DEBUG = True
+DEBUG = not(ON_PRODUCTION_SERVER)
+TEMPLATE_DEBUG = DEBUG
+SEND_BROKEN_LINK_EMAILS = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [ ".afultimate.com", ]
 
+ADMINS = (
+    ('Lane Brooks', 'lane@brooksee.com'),
+)
+if ON_PRODUCTION_SERVER:
+    SERVER = "www.afultimate.com"
+else:
+    SERVER = "localhost:8000"
 
 # Application definition
 
@@ -58,12 +70,24 @@ WSGI_APPLICATION = 'pickup.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+if ON_PRODUCTION_SERVER:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',  # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+            'NAME': 'pickup',
+            'USER': 'pickup',
+            'PASSWORD': 'Ultimate1!',
+            'HOST': "localhost",
+            'PORT': "",
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
@@ -83,3 +107,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = 'files'

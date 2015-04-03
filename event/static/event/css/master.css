@@ -103,3 +103,6 @@ input[type=text] {
 	max-width: 800px;
     }
 }
+#event_desc li {
+    margin-bottom: 10px;
+}
